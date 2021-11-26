@@ -32,6 +32,7 @@ class AngleInterpolationAgent(PIDAgent):
                  sync_mode=True):
         super(AngleInterpolationAgent, self).__init__(simspark_ip, simspark_port, teamname, player_id, sync_mode)
         self.keyframes = ([], [], [])
+        self.start_time = self.perception.time
 
     def think(self, perception):
         target_joints = self.angle_interpolation(self.keyframes, perception)
@@ -41,7 +42,45 @@ class AngleInterpolationAgent(PIDAgent):
     def angle_interpolation(self, keyframes, perception):
         target_joints = {}
         # YOUR CODE HERE
-
+        #current running time in reference to perceptron time
+        run_time = perception.time - self.start_time
+        
+        for i, joint in enumerate(keyframes[0]):
+            for t in range (len(keyframes[1][i]) -1):
+                #print('time_0:', keyframes[1][i][t])
+                #print('run time:', run_time)
+                #print('time_3:', keyframes[1][i][t+1])
+                if keyframes[1][i][t] < run_time < keyframes[1][i][t+1]:
+                    #value(angle) of the points(p_0,...,p_3)
+                    y_0 = keyframes[2][i][t][0] # initial point
+                    y_1 = y_0 + keyframes[2][i][t][2][2] # control point after initial point
+                    y_3 = keyframes[2][i][t+1][0] # end point
+                    y_2 = y_3 - keyframes[2][i][t+1][1][2] # control point before end point
+                    t = (run_time-keyframes[1][i][t])/(keyframes[1][i][t+1] - keyframes[1][i][t]) 
+                    y_t = (1-t)**3 * y_0 + 3*(1-t)**2 * t * y_1 + 3*(1-t)* t**2 * y_2 + t**3 * y_3
+                    target_joints.update({joint:y_t})
+                else:
+                    continue     
+        #antara keyframe 0 dgn keyframe 1 i adalah perbandingan antara (1-t_0/t_1-t_0)
+        #if diff_time < time_in_keyframe:
+        #    keyframe stay
+        #    calculate bezier for taken keyframe diff_time as i in parameter, as p0 takes value_0
+        #    save to targets_joint
+        #else
+        #    next_keyframe
+        
+        #i = t-->current_time
+        #p_0 = (angle_0)
+        
+        #print(perception.time)
+        #print(keyframes[2][0][0][0])
+        
+        #for i, j in enumarate(keyframes[0]):
+        #    for t in (len(keyframes[1][i])-1):
+        #        p_0 = (keyframes[1][i], keyframes[2][]) 
+                
+        #target_joints = {'headYaw' : 0, ...}
+        #print(target_joints)
         return target_joints
 
 if __name__ == '__main__':

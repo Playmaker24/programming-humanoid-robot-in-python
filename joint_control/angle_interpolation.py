@@ -61,26 +61,7 @@ class AngleInterpolationAgent(PIDAgent):
                     target_joints.update({joint:y_t})
                 else:
                     continue     
-        #antara keyframe 0 dgn keyframe 1 i adalah perbandingan antara (1-t_0/t_1-t_0)
-        #if diff_time < time_in_keyframe:
-        #    keyframe stay
-        #    calculate bezier for taken keyframe diff_time as i in parameter, as p0 takes value_0
-        #    save to targets_joint
-        #else
-        #    next_keyframe
         
-        #i = t-->current_time
-        #p_0 = (angle_0)
-        
-        #print(perception.time)
-        #print(keyframes[2][0][0][0])
-        
-        #for i, j in enumarate(keyframes[0]):
-        #    for t in (len(keyframes[1][i])-1):
-        #        p_0 = (keyframes[1][i], keyframes[2][]) 
-                
-        #target_joints = {'headYaw' : 0, ...}
-        #print(target_joints)
         return target_joints
 
 if __name__ == '__main__':
